@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.routes import router
+from backend.api.history import router as history_router
 
 app = FastAPI(
     title="FlowMind AI",
