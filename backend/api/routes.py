@@ -19,4 +19,7 @@ async def get_agent(name: str):
 
 @router.post("/chat")
 async def chat(request: ChatRequest):
-    return chat_service.process(request.message)
+    return chat_service.process(
+    request.session_id,
+    request.message
+)
