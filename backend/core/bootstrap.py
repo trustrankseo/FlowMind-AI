@@ -9,6 +9,10 @@ from backend.events.handlers import log_event
 from backend.agents.registry import agent_registry
 from backend.brain.engine import brain
 
+from backend.events.handlers import (
+    log_event,
+    task_completed
+)
 def bootstrap():
 
     container.register(
@@ -40,4 +44,8 @@ event_bus.subscribe(
 agent_registry.register(
     "brain",
     brain
+)
+event_bus.subscribe(
+    "task.completed",
+    task_completed
 )
