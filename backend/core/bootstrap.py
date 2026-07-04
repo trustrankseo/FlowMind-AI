@@ -6,6 +6,8 @@ from backend.brain.engine import brain
 from backend.services.chat_service import chat_service
 from backend.events.bus import event_bus
 from backend.events.handlers import log_event
+from backend.agents.registry import agent_registry
+from backend.brain.engine import brain
 
 def bootstrap():
 
@@ -34,4 +36,8 @@ def bootstrap():
 event_bus.subscribe(
     "task.created",
     log_event
+)
+agent_registry.register(
+    "brain",
+    brain
 )
