@@ -9,6 +9,7 @@ from backend.core.error_handlers import global_exception_handler
 from backend.api.routes import router
 from backend.api.history import router as history_router
 from backend.api.auth import router as auth_router
+from backend.api.github import router as github_router
 
 from backend.database.base import Base
 from backend.database.session import engine
@@ -57,13 +58,22 @@ app.add_exception_handler(
 # ---------------------------
 
 app.include_router(router, prefix="/api")
-app.include_router(history_router, prefix="/api")
 
-# Authentication Routes
+app.include_router(
+    history_router,
+    prefix="/api"
+)
+
 app.include_router(
     auth_router,
     prefix="/api/auth",
     tags=["Authentication"]
+)
+
+app.include_router(
+    github_router,
+    prefix="/api/github",
+    tags=["GitHub"]
 )
 
 # ---------------------------
