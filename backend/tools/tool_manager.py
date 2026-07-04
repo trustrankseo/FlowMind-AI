@@ -1,26 +1,34 @@
-from backend.tools.registry import registry
-
-from backend.tools.file_tool import FileTool
-from backend.tools.search_tool import SearchTool
-from backend.tools.code_tool import CodeTool
-from backend.tools.browser_tool import BrowserTool
-
-
-registry.register(FileTool())
-registry.register(SearchTool())
-registry.register(CodeTool())
-registry.register(BrowserTool())
+from backend.tools.registry import tool_registry
+from backend.tools.dispatcher import tool_dispatcher
 
 
 class ToolManager:
 
-    def get(self, name):
+    def register(
+        self,
+        name: str,
+        tool
+    ):
 
-        return registry.get(name)
+        tool_registry.register(
+            name,
+            tool
+        )
 
-    def list(self):
+    async def execute(
+        self,
+        tool_name: str,
+        request
+    ):
 
-        return registry.all()
+        return await tool_dispatcher.execute(
+            tool_name,
+            request
+        )
+
+    def available_tools(self):
+
+        return tool_registry.all()
 
 
 tool_manager = ToolManager()
