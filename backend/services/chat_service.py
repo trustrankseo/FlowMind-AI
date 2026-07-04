@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from backend.models.chat import ChatResponse
 from backend.providers.provider_manager import provider_manager
 from backend.services.database_memory import database_memory
-from backend.brain.engine import brain
 
 from backend.memory.session import session_memory
 from backend.memory.summarizer import memory_summarizer
+
+from backend.engine.engine import engine
 
 
 class ChatService:
@@ -32,24 +33,27 @@ class ChatService:
             message
         )
 
-        # AI Brain Analysis
-        brain_result = await brain.process(message)
-
         # Load Previous Memory
         history = session_memory.history(
             db,
             session_id
         )
 
-        # Generate Memory Summary
+        # Memory Summary
         memory_summary = memory_summarizer.summarize(
             history
+        )
+
+        # Central AI Engine
+        engine_result = await engine.process(
+            session_id=session_id,
+            message=message
         )
 
         # Active AI Provider
         provider = provider_manager.get_provider()
 
-        # Generate AI Response
+        # Final AI Response
         reply = await provider.chat(
             f"""
 You are FlowMind AI.
@@ -57,19 +61,19 @@ You are FlowMind AI.
 Memory Summary:
 {memory_summary}
 
-Brain Analysis:
-{brain_result}
+Engine Result:
+{engine_result}
 
 User Message:
 {message}
 
-Generate the best possible response based on:
-1. Memory Summary
-2. Brain Analysis
-3. User Message
+Generate the best possible response.
 
-If a tool is required, use the Brain Analysis.
-Otherwise, reply naturally.
+Rules:
+- Use memory if relevant.
+- Follow the engine pipeline.
+- If tools are required, follow the engine decision.
+- Otherwise reply naturally.
 """
         )
 
