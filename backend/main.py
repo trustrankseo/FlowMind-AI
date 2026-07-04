@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.core.lifespan import lifespan
 from backend.core.health import system_health
+from backend.core.middleware import LoggingMiddleware
+from backend.core.error_handlers import global_exception_handler
 
 from backend.api.routes import router
 from backend.api.history import router as history_router
@@ -24,7 +26,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS Configuration
+# ---------------------------
+# Middleware
+# ---------------------------
+
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Production mein specific domains use karenge
@@ -33,10 +39,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Request Logging
+app.add_middleware(LoggingMiddleware)
+
+# ---------------------------
+# Exception Handlers
+# ---------------------------
+
+app.add_exception_handler(
+    Exception,
+    global_exception_handler
+)
+
+# ---------------------------
 # API Routes
+# ---------------------------
+
 app.include_router(router, prefix="/api")
 app.include_router(history_router, prefix="/api")
 
+# ---------------------------
+# Root Endpoint
+# ---------------------------
 
 @app.get("/")
 async def root():
@@ -47,6 +71,9 @@ async def root():
         "message": "Welcome to FlowMind AI 🚀"
     }
 
+# ---------------------------
+# Health Endpoint
+# ---------------------------
 
 @app.get("/health")
 async def health():
