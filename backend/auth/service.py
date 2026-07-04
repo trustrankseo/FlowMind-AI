@@ -9,10 +9,12 @@ class AuthService:
         password: str
     ):
 
-        # Temporary Authentication
-        # JWT next step mein add hoga
+        # Temporary User Validation
+        # Database validation next sprint
 
-        token = security.generate_token()
+        token = security.create_access_token(
+            email
+        )
 
         return {
             "access_token": token,
