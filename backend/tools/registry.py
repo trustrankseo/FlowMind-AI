@@ -1,19 +1,19 @@
 class ToolRegistry:
 
     def __init__(self):
-        self.tools = {}
+        self._tools = {}
 
-    def register(self, tool):
+    def register(self, name: str, tool):
 
-        self.tools[tool.name] = tool
+        self._tools[name] = tool
 
-    def get(self, name):
+    def get(self, name: str):
 
-        return self.tools.get(name)
+        return self._tools.get(name)
 
     def all(self):
 
-        return self.tools
+        return list(self._tools.keys())
 
 
-registry = ToolRegistry()
+tool_registry = ToolRegistry()
