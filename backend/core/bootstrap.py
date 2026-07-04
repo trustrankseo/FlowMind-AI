@@ -4,21 +4,23 @@ from backend.providers.provider_manager import provider_manager
 from backend.tools.tool_manager import tool_manager
 from backend.brain.engine import brain
 from backend.services.chat_service import chat_service
-from backend.events.bus import event_bus
-from backend.events.handlers import log_event
-from backend.agents.registry import agent_registry
-from backend.brain.engine import brain
 
+from backend.events.bus import event_bus
 from backend.events.handlers import (
     log_event,
-    task_completed
-
-from backend.browser.manager import browser_manager
-from backend.github.service import github_service
-
+    task_completed,
 )
+
+from backend.agents.registry import agent_registry
+
+from backend.browser.tool import browser_tool
+from backend.github.tool import github_tool
+from backend.coding.tool import coding_tool
+
+
 def bootstrap():
 
+    # Register Core Services
     container.register(
         "provider_manager",
         provider_manager
@@ -39,26 +41,37 @@ def bootstrap():
         chat_service
     )
 
+    # Register Agents
+    agent_registry.register(
+        "brain",
+        brain
+    )
+
+    # Register Event Handlers
+    event_bus.subscribe(
+        "task.created",
+        log_event
+    )
+
+    event_bus.subscribe(
+        "task.completed",
+        task_completed
+    )
+
+    # Register Tools
+    tool_manager.register(
+        browser_tool.name,
+        browser_tool
+    )
+
+    tool_manager.register(
+        github_tool.name,
+        github_tool
+    )
+
+    tool_manager.register(
+        coding_tool.name,
+        coding_tool
+    )
+
     return container
-
-event_bus.subscribe(
-    "task.created",
-    log_event
-)
-agent_registry.register(
-    "brain",
-    brain
-)
-event_bus.subscribe(
-    "task.completed",
-    task_completed
-)
-tool_manager.register(
-    "browser",
-    browser_manager
-)
-
-tool_manager.register(
-    "github",
-    github_service
-)
