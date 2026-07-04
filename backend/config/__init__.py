@@ -1,0 +1,3 @@
+"""
+FlowMind AI Configuration Package
+"""
