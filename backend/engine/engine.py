@@ -4,10 +4,7 @@ from backend.memory.session import session_memory
 from backend.memory.summarizer import memory_summarizer
 
 from backend.master.manager import master_agent
-from backend.providers.provider_manager import provider_manager
-
-from backend.planner.planner import planner
-from backend.planner.executor import executor
+from backend.orchestrator.orchestrator import orchestrator
 
 
 class AIEngine:
@@ -39,67 +36,22 @@ class AIEngine:
         )
 
         # ----------------------------
-        # Create Execution Plan
+        # AI Orchestrator
         # ----------------------------
-        execution_plan = planner.create(
-            goal=message,
-            agents=[
-                "brain",
-                "coding",
-                "browser",
-                "github"
-            ]
+        result = await orchestrator.run(
+            memory=memory,
+            master_plan=master_plan,
+            message=message
         )
 
         # ----------------------------
-        # Execute Agents
+        # Final Engine Response
         # ----------------------------
-        agent_results = await executor.execute(
-            execution_plan
-        )
-
-        # ----------------------------
-        # AI Provider
-        # ----------------------------
-        provider = provider_manager.get_provider()
-
-        prompt = f"""
-You are FlowMind AI Core.
-
-Conversation Memory:
-{memory}
-
-Master Decision:
-{master_plan}
-
-Execution Plan:
-{execution_plan.model_dump()}
-
-Agent Results:
-{agent_results}
-
-User Message:
-{message}
-
-Generate the best possible response.
-
-Instructions:
-- Use conversation memory if relevant.
-- Consider the execution plan.
-- Use agent results if available.
-- Reply naturally and helpfully.
-"""
-
-        response = await provider.chat(
-            prompt
-        )
-
         return {
             "memory": memory,
             "master_plan": master_plan,
-            "execution_plan": execution_plan.model_dump(),
-            "agent_results": agent_results,
-            "response": response,
+            "response": result["response"],
+            "data": result["data"],
             "pipeline": pipeline.steps()
         }
 
