@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.core.lifespan import lifespan
+from backend.core.health import system_health
 
 from backend.api.routes import router
 from backend.api.history import router as history_router
@@ -9,7 +10,7 @@ from backend.api.history import router as history_router
 from backend.database.base import Base
 from backend.database.session import engine
 
-# Import Models
+# Import Database Models
 from backend.database.models.conversation import Conversation
 from backend.database.models.message import Message
 
@@ -49,6 +50,4 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {
-        "status": "healthy"
-    }
+    return system_health()
