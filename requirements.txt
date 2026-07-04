@@ -6,3 +6,5 @@ pydantic-settings
 google-genai
 sqlalchemy
 aiosqlite
+playwright
+aiofiles
