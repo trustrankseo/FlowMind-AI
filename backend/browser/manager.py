@@ -8,26 +8,34 @@ class BrowserManager:
         request
     ):
 
-        if request.action == "open":
+        action = request.action.lower()
+
+        if action == "open":
 
             return await browser_actions.open(
                 request.url
             )
 
-        if request.action == "click":
+        if action == "click":
 
             return await browser_actions.click(
                 request.selector
             )
 
-        if request.action == "type":
+        if action == "type":
 
             return await browser_actions.type(
                 request.selector,
                 request.text
             )
 
-        return "Unknown browser action."
+        if action == "screenshot":
+
+            return await browser_actions.screenshot()
+
+        return {
+            "error": "Unknown Action"
+        }
 
 
 browser_manager = BrowserManager()
