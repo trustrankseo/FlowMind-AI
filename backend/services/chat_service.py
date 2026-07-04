@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from backend.models.chat import ChatResponse
 from backend.providers.provider_manager import provider_manager
 from backend.services.database_memory import database_memory
+from backend.brain.engine import brain
 
 
 class ChatService:
@@ -14,11 +15,13 @@ class ChatService:
         message: str
     ):
 
+        # Create or Get Conversation
         conversation = database_memory.create_conversation(
             db,
             session_id
         )
 
+        # Save User Message
         database_memory.add_message(
             db,
             conversation.id,
@@ -26,10 +29,16 @@ class ChatService:
             message
         )
 
+        # AI Brain Analysis
+        brain_result = await brain.process(message)
+
+        # Active AI Provider
         provider = provider_manager.get_provider()
 
+        # Generate AI Response
         reply = await provider.chat(message)
 
+        # Save Assistant Response
         database_memory.add_message(
             db,
             conversation.id,
