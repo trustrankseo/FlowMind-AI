@@ -1,0 +1,9 @@
+from pydantic import BaseModel
+from typing import Any
+
+
+class AgentMessage(BaseModel):
+    sender: str
+    receiver: str
+    action: str
+    payload: Any = None
