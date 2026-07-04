@@ -1,26 +1,32 @@
-from backend.providers.gemini import GeminiProvider
-from backend.providers.openai import OpenAIProvider
+from backend.providers.factory import factory
+from backend.providers.gemini import gemini_provider
 
 
 class ProviderManager:
 
     def __init__(self):
 
-        self.providers = {
-            "gemini": GeminiProvider(),
-            "openai": OpenAIProvider(),
-        }
+        factory.register(
+            "gemini",
+            gemini_provider
+        )
 
-        self.active_provider = "gemini"
-
-    def set_provider(self, name: str):
-
-        if name in self.providers:
-            self.active_provider = name
+        self.active = "gemini"
 
     def get_provider(self):
 
-        return self.providers[self.active_provider]
+        return factory.get(
+            self.active
+        )
+
+    def set_provider(
+        self,
+        name: str
+    ):
+
+        if factory.get(name):
+
+            self.active = name
 
 
 provider_manager = ProviderManager()
