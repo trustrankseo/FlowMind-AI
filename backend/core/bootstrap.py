@@ -13,14 +13,23 @@ from backend.events.handlers import (
 
 from backend.agents.registry import agent_registry
 
+# Tools
 from backend.browser.tool import browser_tool
 from backend.github.tool import github_tool
 from backend.coding.tool import coding_tool
 
+# Agents
+from backend.browser.agent import browser_agent
+from backend.github.agent import github_agent
+from backend.coding.agent import coding_agent
+
 
 def bootstrap():
 
+    # ==========================
     # Register Core Services
+    # ==========================
+
     container.register(
         "provider_manager",
         provider_manager
@@ -41,13 +50,34 @@ def bootstrap():
         chat_service
     )
 
+    # ==========================
     # Register Agents
+    # ==========================
+
     agent_registry.register(
-        "brain",
+        brain.name,
         brain
     )
 
+    agent_registry.register(
+        browser_agent.name,
+        browser_agent
+    )
+
+    agent_registry.register(
+        github_agent.name,
+        github_agent
+    )
+
+    agent_registry.register(
+        coding_agent.name,
+        coding_agent
+    )
+
+    # ==========================
     # Register Event Handlers
+    # ==========================
+
     event_bus.subscribe(
         "task.created",
         log_event
@@ -58,7 +88,10 @@ def bootstrap():
         task_completed
     )
 
+    # ==========================
     # Register Tools
+    # ==========================
+
     tool_manager.register(
         browser_tool.name,
         browser_tool
