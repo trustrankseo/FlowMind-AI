@@ -12,6 +12,10 @@ from backend.brain.engine import brain
 from backend.events.handlers import (
     log_event,
     task_completed
+
+from backend.browser.manager import browser_manager
+from backend.github.service import github_service
+
 )
 def bootstrap():
 
@@ -48,4 +52,13 @@ agent_registry.register(
 event_bus.subscribe(
     "task.completed",
     task_completed
+)
+tool_manager.register(
+    "browser",
+    browser_manager
+)
+
+tool_manager.register(
+    "github",
+    github_service
 )
