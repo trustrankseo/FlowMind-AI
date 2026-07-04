@@ -1,3 +1,5 @@
+from backend.interfaces.base_agent import BaseAgent
+
 from backend.brain.intent import intent_detector
 from backend.brain.planner import planner
 from backend.brain.executor import executor
@@ -5,7 +7,9 @@ from backend.brain.executor import executor
 from backend.llm.orchestrator import orchestrator
 
 
-class BrainEngine:
+class BrainEngine(BaseAgent):
+
+    name = "brain"
 
     async def process(
         self,
@@ -35,6 +39,10 @@ class BrainEngine:
             "tool": llm_decision,
             "results": tool_results
         }
+
+    async def handle(self, message):
+
+        return await self.process(message)
 
 
 brain = BrainEngine()
