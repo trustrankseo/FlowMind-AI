@@ -1,0 +1,9 @@
+APP_NAME = "FlowMind AI"
+
+APP_VERSION = "1.0.0"
+
+DEFAULT_SESSION = "default"
+
+MAX_CHAT_HISTORY = 50
+
+MAX_FILE_SIZE_MB = 20
