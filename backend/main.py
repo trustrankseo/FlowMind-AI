@@ -1,13 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.core.lifespan import lifespan
+
 from backend.api.routes import router
 from backend.api.history import router as history_router
+
+from backend.database.base import Base
+from backend.database.session import engine
+
+# Import Models
+from backend.database.models.conversation import Conversation
+from backend.database.models.message import Message
+
+# Create Database Tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="FlowMind AI",
     description="Next Generation AI Operating System",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # CORS Configuration
@@ -22,6 +35,7 @@ app.add_middleware(
 # API Routes
 app.include_router(router, prefix="/api")
 app.include_router(history_router, prefix="/api")
+
 
 @app.get("/")
 async def root():
@@ -38,11 +52,3 @@ async def health():
     return {
         "status": "healthy"
     }
-from backend.database.base import Base
-from backend.database.session import engine
-
-# Import models
-from backend.database.models.conversation import Conversation
-from backend.database.models.message import Message
-
-Base.metadata.create_all(bind=engine)
