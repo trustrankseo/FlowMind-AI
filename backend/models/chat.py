@@ -4,9 +4,10 @@ from typing import Optional
 
 class ChatRequest(BaseModel):
     message: str
-    session_id: Optional[str] = "default"
+    session_id: str = "default"
 
 
 class ChatResponse(BaseModel):
     success: bool
     response: str
+    session_id: str
