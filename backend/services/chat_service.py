@@ -1,12 +1,7 @@
 from sqlalchemy.orm import Session
 
 from backend.models.chat import ChatResponse
-from backend.providers.provider_manager import provider_manager
 from backend.services.database_memory import database_memory
-
-from backend.memory.session import session_memory
-from backend.memory.summarizer import memory_summarizer
-
 from backend.engine.engine import engine
 
 
@@ -33,49 +28,15 @@ class ChatService:
             message
         )
 
-        # Load Previous Memory
-        history = session_memory.history(
-            db,
-            session_id
-        )
-
-        # Memory Summary
-        memory_summary = memory_summarizer.summarize(
-            history
-        )
-
-        # Central AI Engine
+        # Process Request Through AI Engine
         engine_result = await engine.process(
+            db=db,
             session_id=session_id,
             message=message
         )
 
-        # Active AI Provider
-        provider = provider_manager.get_provider()
-
-        # Final AI Response
-        reply = await provider.chat(
-            f"""
-You are FlowMind AI.
-
-Memory Summary:
-{memory_summary}
-
-Engine Result:
-{engine_result}
-
-User Message:
-{message}
-
-Generate the best possible response.
-
-Rules:
-- Use memory if relevant.
-- Follow the engine pipeline.
-- If tools are required, follow the engine decision.
-- Otherwise reply naturally.
-"""
-        )
+        # Final Response
+        reply = engine_result["response"]
 
         # Save Assistant Response
         database_memory.add_message(
