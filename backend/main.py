@@ -21,7 +21,7 @@ app.add_middleware(
 
 # API Routes
 app.include_router(router, prefix="/api")
-
+app.include_router(history_router, prefix="/api")
 
 @app.get("/")
 async def root():
