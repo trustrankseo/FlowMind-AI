@@ -1,5 +1,6 @@
 from backend.models.chat import ChatResponse
 from backend.utils.memory import memory
+from backend.core.brain import brain
 
 
 class ChatService:
@@ -8,13 +9,15 @@ class ChatService:
 
         memory.add_message(session_id, "user", message)
 
-        response = f"I received your message: {message}"
+        result = brain.think(message)
 
-        memory.add_message(session_id, "assistant", response)
+        reply = result["reply"]
+
+        memory.add_message(session_id, "assistant", reply)
 
         return ChatResponse(
             success=True,
-            response=response
+            response=reply
         )
 
 
