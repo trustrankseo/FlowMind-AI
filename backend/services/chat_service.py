@@ -1,3 +1,4 @@
+
 from sqlalchemy.orm import Session
 
 from backend.models.chat import ChatResponse
@@ -36,7 +37,19 @@ class ChatService:
         provider = provider_manager.get_provider()
 
         # Generate AI Response
-        reply = await provider.chat(message)
+        reply = await provider.chat(
+            f"""
+You are FlowMind AI.
+
+Brain Analysis:
+{brain_result}
+
+User Message:
+{message}
+
+Generate a helpful response based on the brain analysis.
+"""
+        )
 
         # Save Assistant Response
         database_memory.add_message(
