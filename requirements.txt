@@ -9,4 +9,3 @@ aiosqlite
 aiofiles
 python-jose[cryptography]
 passlib[bcrypt]
-python
