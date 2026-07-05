@@ -1,5 +1,6 @@
 from backend.coding.editor import editor
 from backend.coding.analyzer import code_analyzer
+from backend.coding.refactor import refactor_engine
 
 
 class CodingService:
@@ -23,6 +24,23 @@ class CodingService:
         editor.save(
             path,
             content
+        )
+
+        return {
+            "success": True
+        }
+
+    def replace_text(
+        self,
+        path: str,
+        old: str,
+        new: str
+    ):
+
+        refactor_engine.replace(
+            path,
+            old,
+            new
         )
 
         return {
