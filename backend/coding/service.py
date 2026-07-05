@@ -37,15 +37,11 @@ class CodingService:
         new: str
     ):
 
-        refactor_engine.replace(
+        return refactor_engine.replace(
             path,
             old,
             new
         )
-
-        return {
-            "success": True
-        }
 
 
 coding_service = CodingService()
