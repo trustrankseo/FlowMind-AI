@@ -1,16 +1,20 @@
+from pathlib import Path
+
+
 class CodeAnalyzer:
 
-    def analyze(
-        self,
-        code: str
-    ):
+    def info(self, path: str):
 
-        lines = len(code.splitlines())
+        file = Path(path)
 
         return {
-            "lines": lines,
-            "characters": len(code)
+            "name": file.name,
+            "suffix": file.suffix,
+            "size": file.stat().st_size
+            if file.exists()
+            else 0,
+            "exists": file.exists()
         }
 
 
-analyzer = CodeAnalyzer()
+code_analyzer = CodeAnalyzer()
