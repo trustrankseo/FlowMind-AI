@@ -1,6 +1,9 @@
 from backend.core.container import container
 from backend.core.version import VERSION, BUILD
 from backend.core.startup_check import startup_check
+from backend.core.environment import environment
+from backend.core.dependency_check import dependency_check
+from backend.core.system_info import system_info
 
 
 def system_health():
@@ -10,5 +13,8 @@ def system_health():
         "version": VERSION,
         "build": BUILD,
         "services": list(container.all().keys()),
-        "startup": startup_check.run()
+        "startup": startup_check.run(),
+        "environment": environment.info(),
+        "dependencies": dependency_check.run(),
+        "system": system_info.info(),
     }
