@@ -6,6 +6,7 @@ from backend.core.health import system_health
 from backend.core.middleware import LoggingMiddleware
 from backend.core.error_handlers import global_exception_handler
 from backend.core.version import VERSION
+from backend.core.api_info import api_info
 
 from backend.api.routes import router
 from backend.api.history import router as history_router
@@ -33,7 +34,6 @@ app = FastAPI(
 # Middleware
 # --------------------------------------------------
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Production mein specific domains use karenge
@@ -42,7 +42,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Request Logging
 app.add_middleware(LoggingMiddleware)
 
 # --------------------------------------------------
@@ -83,23 +82,12 @@ app.include_router(
 
 @app.get("/")
 async def root():
-    return {
-        "app": "FlowMind AI",
-        "status": "Running",
-        "version": VERSION,
-        "message": "Welcome to FlowMind AI 🚀"
-    }
+    return api_info.info()
 
 # --------------------------------------------------
 # Health Endpoint
 # --------------------------------------------------
 
-@app.get("/")
-async def root():
-    return {
-        "app": "FlowMind AI",
-        "version": VERSION,
-        "status": "Running",
-        "health": "/health",
-        "docs": "/docs"
-    }
+@app.get("/health")
+async def health():
+    return system_health()
