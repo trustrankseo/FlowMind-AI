@@ -1,8 +1,10 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
-class CodeRequest(BaseModel):
-    action: str
-    file_path: Optional[str] = None
-    content: Optional[str] = None
+class FileRequest(BaseModel):
+    path: str
+
+
+class FileWriteRequest(BaseModel):
+    path: str
+    content: str
