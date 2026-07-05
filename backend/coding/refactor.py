@@ -1,4 +1,6 @@
 from backend.coding.file_manager import file_manager
+from backend.coding.validator import validator
+from backend.coding.formatter import formatter
 
 
 class RefactorEngine:
@@ -10,19 +12,36 @@ class RefactorEngine:
         new: str
     ):
 
-        content = file_manager.read(path)
+        source = file_manager.read(path)
 
-        content = content.replace(
+        updated = source.replace(
             old,
             new
         )
 
-        file_manager.write(
-            path,
-            content
+        updated = formatter.format(
+            updated
         )
 
-        return True
+        result = validator.validate(
+            updated
+        )
+
+        if not result["valid"]:
+
+            return {
+                "success": False,
+                "error": result["error"]
+            }
+
+        file_manager.write(
+            path,
+            updated
+        )
+
+        return {
+            "success": True
+        }
 
 
 refactor_engine = RefactorEngine()
