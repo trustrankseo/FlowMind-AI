@@ -94,6 +94,12 @@ async def root():
 # Health Endpoint
 # --------------------------------------------------
 
-@app.get("/health")
-async def health():
-    return system_health()
+@app.get("/")
+async def root():
+    return {
+        "app": "FlowMind AI",
+        "version": VERSION,
+        "status": "Running",
+        "health": "/health",
+        "docs": "/docs"
+    }
