@@ -14,23 +14,39 @@ class TaskExecutor:
         for step in plan:
 
             if step == "provider":
-
                 continue
 
-            tool = tool_manager.get(
-                step.replace("_tool", "")
+            tool_name = (
+                step
+                .replace("_tool", "")
+                .replace("_agent", "")
             )
 
-            if tool:
+            if tool_name not in tool_manager.available_tools():
+                continue
 
-                result = await tool.execute(
-                    prompt=message,
-                    query=message,
-                    path=message,
-                    url=message
+            # NOTE (temporary fix): each tool currently expects a different
+            # request shape (dict vs object-with-attributes), which isn't
+            # standardized yet (see code review). Wrapping in try/except so
+            # one tool's mismatched contract can't crash the whole request.
+            try:
+                result = await tool_manager.execute(
+                    tool_name,
+                    {
+                        "action": "open",
+                        "root": ".",
+                        "path": message,
+                        "url": message,
+                        "content": message,
+                    }
                 )
+            except Exception as error:
+                result = {
+                    "success": False,
+                    "error": f"'{tool_name}' tool failed: {error}"
+                }
 
-                results.append(result)
+            results.append(result)
 
         return results
 
