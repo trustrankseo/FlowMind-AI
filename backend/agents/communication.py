@@ -15,7 +15,11 @@ class AgentCommunication:
                 "error": "Agent not found"
             }
 
-        return await agent.handle(message)
+        # Agents receive the payload (the actual task data), not the
+        # AgentMessage envelope itself — the envelope (sender/receiver/
+        # action) is routing metadata, not something an agent's `handle()`
+        # should need to unpack.
+        return await agent.handle(message.payload)
 
 
 communication = AgentCommunication()

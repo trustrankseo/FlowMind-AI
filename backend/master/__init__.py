@@ -1,3 +1,0 @@
-"""
-FlowMind Master Agent
-"""
