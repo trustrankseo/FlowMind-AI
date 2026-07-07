@@ -12,6 +12,7 @@ from backend.api.routes import router
 from backend.api.history import router as history_router
 from backend.api.auth import router as auth_router
 from backend.api.github import router as github_router
+from backend.api.testing import router as testing_router
 
 from backend.database.base import Base
 from backend.database.session import engine
@@ -74,6 +75,12 @@ app.include_router(
     github_router,
     prefix="/api/github",
     tags=["GitHub"]
+)
+
+app.include_router(
+    testing_router,
+    prefix="/api/testing",
+    tags=["Testing"]
 )
 
 # --------------------------------------------------

@@ -26,6 +26,11 @@ class TaskPlanner:
             Intent.SEARCH: [
                 "search_tool",
                 "provider"
+            ],
+
+            Intent.TEST: [
+                "testing_tool",
+                "provider"
             ]
         }
 

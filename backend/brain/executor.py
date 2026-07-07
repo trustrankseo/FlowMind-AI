@@ -30,15 +30,23 @@ class TaskExecutor:
             # standardized yet (see code review). Wrapping in try/except so
             # one tool's mismatched contract can't crash the whole request.
             try:
-                result = await tool_manager.execute(
-                    tool_name,
-                    {
+                if tool_name == "testing":
+                    # The chat message ("run the tests") is an instruction,
+                    # not a real filesystem path — default to testing the
+                    # whole project unless the user names a specific path.
+                    request = {"path": "."}
+                else:
+                    request = {
                         "action": "open",
                         "root": ".",
                         "path": message,
                         "url": message,
                         "content": message,
                     }
+
+                result = await tool_manager.execute(
+                    tool_name,
+                    request
                 )
             except Exception as error:
                 result = {

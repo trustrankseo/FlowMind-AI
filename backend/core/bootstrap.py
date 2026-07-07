@@ -17,11 +17,13 @@ from backend.agents.registry import agent_registry
 from backend.browser.tool import browser_tool
 from backend.github.tool import github_tool
 from backend.coding.tool import coding_tool
+from backend.testing.tool import testing_tool
 
 # Agents
 from backend.browser.agent import browser_agent
 from backend.github.agent import github_agent
 from backend.coding.agent import coding_agent
+from backend.testing.agent import testing_agent
 
 
 def bootstrap():
@@ -74,6 +76,11 @@ def bootstrap():
         coding_agent
     )
 
+    agent_registry.register(
+        testing_agent.name,
+        testing_agent
+    )
+
     # ==========================
     # Register Event Handlers
     # ==========================
@@ -105,6 +112,11 @@ def bootstrap():
     tool_manager.register(
         coding_tool.name,
         coding_tool
+    )
+
+    tool_manager.register(
+        testing_tool.name,
+        testing_tool
     )
 
     return container

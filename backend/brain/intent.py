@@ -7,6 +7,7 @@ class Intent(str, Enum):
     FILE = "file"
     BROWSER = "browser"
     SEARCH = "search"
+    TEST = "test"
     UNKNOWN = "unknown"
 
 
@@ -15,6 +16,9 @@ class IntentDetector:
     def detect(self, message: str) -> Intent:
 
         text = message.lower()
+
+        if any(word in text for word in ["run test", "run the test", "pytest", "unit test", "run tests"]):
+            return Intent.TEST
 
         if any(word in text for word in ["code", "python", "javascript"]):
             return Intent.CODE
