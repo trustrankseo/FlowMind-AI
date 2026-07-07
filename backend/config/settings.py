@@ -16,6 +16,13 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_IMAGE_MODEL: str = "imagen-4.0-generate-001"
+    GEMINI_VIDEO_MODEL: str = "veo-3.0-generate-001"
+    GEMINI_TTS_MODEL: str = "gemini-2.5-flash-preview-tts"
+
+    ELEVENLABS_API_KEY: str = ""
+
+    GITHUB_TOKEN: str = ""
 
     DATABASE_URL: str = "sqlite:///./flowmind.db"
 

@@ -23,13 +23,13 @@ class AgentManager:
 manager = AgentManager()
 
 manager.register(
-    "Master Agent",
-    "Controls all FlowMind AI agents."
+    "Brain",
+    "Detects intent and routes messages to the right tool/agent."
 )
 
 manager.register(
     "Coding Agent",
-    "Writes and analyzes code."
+    "Opens and saves project files."
 )
 
 manager.register(
@@ -38,16 +38,31 @@ manager.register(
 )
 
 manager.register(
-    "Research Agent",
-    "Searches and summarizes information."
+    "GitHub Agent",
+    "Summarizes and inspects the connected GitHub repository."
 )
 
 manager.register(
-    "File Agent",
-    "Reads and manages project files."
+    "Testing Agent",
+    "Runs pytest against the project and reports real results."
 )
 
 manager.register(
-    "Task Planner",
-    "Creates execution plans and manages tasks."
+    "Image Agent",
+    "Generates images from a text prompt (Gemini/Imagen)."
+)
+
+manager.register(
+    "Video Agent",
+    "Generates short videos from a text prompt (Gemini/Veo)."
+)
+
+manager.register(
+    "Voice Agent",
+    "Converts text to spoken audio (Gemini TTS)."
+)
+
+manager.register(
+    "Deployment Agent",
+    "Pulls latest code and installs dependencies on the server."
 )

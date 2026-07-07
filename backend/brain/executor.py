@@ -35,6 +35,12 @@ class TaskExecutor:
                     # not a real filesystem path — default to testing the
                     # whole project unless the user names a specific path.
                     request = {"path": "."}
+                elif tool_name in ("image", "video"):
+                    request = {"prompt": message}
+                elif tool_name == "voice":
+                    request = {"text": message}
+                elif tool_name == "deployment":
+                    request = {}
                 else:
                     request = {
                         "action": "open",

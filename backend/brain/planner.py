@@ -31,6 +31,22 @@ class TaskPlanner:
             Intent.TEST: [
                 "testing_tool",
                 "provider"
+            ],
+
+            Intent.IMAGE: [
+                "image_tool"
+            ],
+
+            Intent.VIDEO: [
+                "video_tool"
+            ],
+
+            Intent.VOICE: [
+                "voice_tool"
+            ],
+
+            Intent.DEPLOY: [
+                "deployment_tool"
             ]
         }
 

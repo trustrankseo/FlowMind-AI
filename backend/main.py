@@ -13,6 +13,10 @@ from backend.api.history import router as history_router
 from backend.api.auth import router as auth_router
 from backend.api.github import router as github_router
 from backend.api.testing import router as testing_router
+from backend.api.images import router as images_router
+from backend.api.video import router as video_router
+from backend.api.voice import router as voice_router
+from backend.api.deployment import router as deployment_router
 
 from backend.database.base import Base
 from backend.database.session import engine
@@ -81,6 +85,30 @@ app.include_router(
     testing_router,
     prefix="/api/testing",
     tags=["Testing"]
+)
+
+app.include_router(
+    images_router,
+    prefix="/api/images",
+    tags=["Images"]
+)
+
+app.include_router(
+    video_router,
+    prefix="/api/video",
+    tags=["Video"]
+)
+
+app.include_router(
+    voice_router,
+    prefix="/api/voice",
+    tags=["Voice"]
+)
+
+app.include_router(
+    deployment_router,
+    prefix="/api/deployment",
+    tags=["Deployment"]
 )
 
 # --------------------------------------------------

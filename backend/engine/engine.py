@@ -41,11 +41,28 @@ class AIEngine:
         # ----------------------------
         brain_result = await brain.process(message)
 
-        reply = await self._build_reply(
-            message,
-            memory,
-            brain_result
-        )
+        # Media-generation and deployment intents return their tool's
+        # result directly — there's no point asking Gemini to "chat
+        # about" a file path or a deployment log.
+        direct_result_intents = {"image", "video", "voice", "deploy"}
+
+        if brain_result.get("intent") in direct_result_intents:
+
+            results = brain_result.get("results") or []
+
+            reply = (
+                str(results[0])
+                if results
+                else "No result was returned by the agent."
+            )
+
+        else:
+
+            reply = await self._build_reply(
+                message,
+                memory,
+                brain_result
+            )
 
         # ----------------------------
         # Final Engine Response
