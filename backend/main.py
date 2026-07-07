@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 
 from backend.core.lifespan import lifespan
 from backend.core.health import system_health
@@ -17,6 +19,8 @@ from backend.api.images import router as images_router
 from backend.api.video import router as video_router
 from backend.api.voice import router as voice_router
 from backend.api.deployment import router as deployment_router
+from backend.api.logs import router as logs_router
+from backend.api.files import router as files_router
 
 from backend.database.base import Base
 from backend.database.session import engine
@@ -48,6 +52,13 @@ app.add_middleware(
 )
 
 app.add_middleware(LoggingMiddleware)
+
+# --------------------------------------------------
+# Static Files (generated images/videos/audio)
+# --------------------------------------------------
+
+os.makedirs("generated", exist_ok=True)
+app.mount("/generated", StaticFiles(directory="generated"), name="generated")
 
 # --------------------------------------------------
 # Exception Handlers
@@ -109,6 +120,18 @@ app.include_router(
     deployment_router,
     prefix="/api/deployment",
     tags=["Deployment"]
+)
+
+app.include_router(
+    logs_router,
+    prefix="/api/logs",
+    tags=["Logs"]
+)
+
+app.include_router(
+    files_router,
+    prefix="/api/files",
+    tags=["Files"]
 )
 
 # --------------------------------------------------
