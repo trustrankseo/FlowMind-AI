@@ -1,151 +1,116 @@
+# backend/main.py
+import asyncio
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-import os
 
-from backend.core.lifespan import lifespan
-from backend.core.health import system_health
-from backend.core.middleware import LoggingMiddleware
-from backend.core.error_handlers import global_exception_handler
-from backend.core.version import VERSION
-from backend.core.api_info import api_info
+from .events.bus import event_bus
+from .llm.providers import get_provider
+from .memory.memory_manager import MemoryManager
+from .agents.chat_agent import ChatAgent
+from .brain.brain import Brain
+from .engine.executor import Executor
 
-from backend.api.routes import router
-from backend.api.history import router as history_router
-from backend.api.auth import router as auth_router
-from backend.api.github import router as github_router
-from backend.api.testing import router as testing_router
-from backend.api.images import router as images_router
-from backend.api.video import router as video_router
-from backend.api.voice import router as voice_router
-from backend.api.deployment import router as deployment_router
-from backend.api.logs import router as logs_router
-from backend.api.files import router as files_router
+logger = logging.getLogger(__name__)
 
-from backend.database.base import Base
-from backend.database.session import engine
+app = FastAPI(title="FlowMind-AI", version="0.1.0")
 
-# Import Database Models
-from backend.database.models.conversation import Conversation
-from backend.database.models.message import Message
-
-# Create Database Tables
-Base.metadata.create_all(bind=engine)
-
-app = FastAPI(
-    title="FlowMind AI",
-    description="Next Generation AI Operating System",
-    version=VERSION,
-    lifespan=lifespan
-)
-
-# --------------------------------------------------
-# Middleware
-# --------------------------------------------------
-
+# CORS middleware (frontend se connect karne ke liye)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Production mein specific domains use karenge
+    allow_origins=["http://localhost:5173"],  # Vite default port
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.add_middleware(LoggingMiddleware)
+# Global instances (baad mein config se initialize karein)
+llm_provider = None
+memory_manager = None
+chat_agent = None
+brain = None
+executor = None
 
-# --------------------------------------------------
-# Static Files (generated images/videos/audio)
-# --------------------------------------------------
+@app.on_event("startup")
+async def startup():
+    global llm_provider, memory_manager, chat_agent, brain, executor
 
-os.makedirs("generated", exist_ok=True)
-app.mount("/generated", StaticFiles(directory="generated"), name="generated")
+    # TODO: Config se values lein — abhi hardcode karein
+    config = {
+        "openai_api_key": "your-openai-key-here",  # .env se replace karein
+        "database_url": "sqlite:///./flowmind.db"
+    }
 
-# --------------------------------------------------
-# Exception Handlers
-# --------------------------------------------------
+    # LLM Provider
+    try:
+        llm_provider = get_provider("openai", config)
+        logger.info("LLM provider initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize LLM provider: {e}")
+        return
 
-app.add_exception_handler(
-    Exception,
-    global_exception_handler
-)
+    # Memory Manager
+    try:
+        memory_manager = MemoryManager(config["database_url"])
+        logger.info("Memory manager initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize memory manager: {e}")
+        return
 
-# --------------------------------------------------
-# API Routes
-# --------------------------------------------------
+    # Chat Agent
+    try:
+        chat_agent = ChatAgent(llm_provider, memory_manager)
+        logger.info("Chat agent initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize chat agent: {e}")
+        return
 
-app.include_router(router, prefix="/api")
+    # Executor
+    try:
+        executor = Executor()
+        executor.register_agent("chat", chat_agent)
+        # Baad mein: executor.register_agent("github", github_agent), etc.
+        logger.info("Executor initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize executor: {e}")
+        return
 
-app.include_router(
-    history_router,
-    prefix="/api"
-)
+    # Brain
+    try:
+        brain = Brain(llm_provider)
+        logger.info("Brain initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize brain: {e}")
+        return
 
-app.include_router(
-    auth_router,
-    prefix="/api/auth",
-    tags=["Authentication"]
-)
+    # Event Bus background task start karein
+    try:
+        await event_bus.start()
+        logger.info("Event bus started")
+    except Exception as e:
+        logger.error(f"Failed to start event bus: {e}")
+        return
 
-app.include_router(
-    github_router,
-    prefix="/api/github",
-    tags=["GitHub"]
-)
+    logger.info("FlowMind-AI backend started successfully")
 
-app.include_router(
-    testing_router,
-    prefix="/api/testing",
-    tags=["Testing"]
-)
-
-app.include_router(
-    images_router,
-    prefix="/api/images",
-    tags=["Images"]
-)
-
-app.include_router(
-    video_router,
-    prefix="/api/video",
-    tags=["Video"]
-)
-
-app.include_router(
-    voice_router,
-    prefix="/api/voice",
-    tags=["Voice"]
-)
-
-app.include_router(
-    deployment_router,
-    prefix="/api/deployment",
-    tags=["Deployment"]
-)
-
-app.include_router(
-    logs_router,
-    prefix="/api/logs",
-    tags=["Logs"]
-)
-
-app.include_router(
-    files_router,
-    prefix="/api/files",
-    tags=["Files"]
-)
-
-# --------------------------------------------------
-# Root Endpoint
-# --------------------------------------------------
+@app.on_event("shutdown")
+async def shutdown():
+    # Event bus gracefully stop karein
+    try:
+        await event_bus.stop()
+        logger.info("Event bus stopped")
+    except Exception as e:
+        logger.error(f"Error stopping event bus: {e}")
 
 @app.get("/")
-async def root():
-    return api_info.info()
-
-# --------------------------------------------------
-# Health Endpoint
-# --------------------------------------------------
+def root():
+    return {"message": "FlowMind-AI is running"}
 
 @app.get("/health")
-async def health():
-    return system_health()
+def health():
+    return {"status": "healthy"}
+
+# TODO: /api/chat endpoint add karein (streaming response)
+# @app.post("/api/chat")
+# async def chat_endpoint(request: ChatRequest):
+#     ...
